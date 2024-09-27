@@ -1,0 +1,11 @@
+[package]
+name = "router"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+axum = "0.7.5"
+tokio = { version = "1.40.0", features = ["full"] }
+tower-service = "0.3.3"
+tracing = "0.1"
+
