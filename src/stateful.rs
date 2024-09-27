@@ -58,8 +58,17 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
         };
     }
 
-    pub async fn setup(&mut self, routes: Option<StatefulRoutes<T>>, state: State<T>) -> Self {
+    pub async fn setup(
+        &mut self,
+        address: Option<String>,
+        routes: Option<StatefulRoutes<T>>,
+        state: State<T>,
+    ) -> Self {
         let mut self_clone = self.clone();
+
+        if address.is_some() {
+            self_clone.address = address.unwrap();
+        }
 
         if routes.is_some() {
             self_clone.routes = routes.unwrap();

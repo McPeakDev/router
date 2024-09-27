@@ -32,8 +32,12 @@ impl Router {
         };
     }
 
-    pub async fn setup(&mut self, routes: Option<Routes>) -> Self {
+    pub async fn setup(&mut self, address: Option<String>, routes: Option<Routes>) -> Self {
         let mut self_clone = self.clone();
+
+        if address.is_some() {
+            self_clone.address = address.unwrap();
+        }
 
         if routes.is_some() {
             self_clone.routes = routes.unwrap();
