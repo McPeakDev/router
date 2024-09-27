@@ -15,7 +15,7 @@ pub trait StatefulNestedRouter<T> {
 
 #[derive(Clone)]
 pub struct State<T> {
-    pub store: Option<T>,
+    pub store: T,
 }
 
 #[async_trait]
