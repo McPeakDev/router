@@ -1,36 +1,11 @@
-use axum::{
-    async_trait,
-    extract::{FromRef, FromRequestParts},
-    http::{request::Parts, StatusCode},
-    Router as GenericRouter,
-};
+use axum::Router as GenericRouter;
 
-pub type AxumRouterWithState<T> = GenericRouter<State<T>>;
+pub type AxumRouterWithState<T> = GenericRouter<T>;
 pub type StatefulRoutes<T> = Vec<StatefulRoute<T>>;
-pub type StatefulRoute<T> = (&'static str, axum::Router<State<T>>);
+pub type StatefulRoute<T> = (&'static str, axum::Router<T>);
 
 pub trait StatefulNestedRouter<T> {
     fn get() -> StatefulRoute<T>;
-}
-
-#[derive(Clone)]
-pub struct State<T> {
-    pub store: T,
-}
-
-#[async_trait]
-impl<S, T> FromRequestParts<S> for State<T>
-where
-    State<T>: FromRef<S>,
-    S: Send + Sync,
-{
-    type Rejection = (StatusCode, String);
-
-    async fn from_request_parts(_parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
-        let state = State::from_ref(state);
-
-        return Ok(state);
-    }
 }
 
 pub struct Router<T> {
@@ -62,7 +37,7 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
         &mut self,
         address: Option<String>,
         routes: Option<StatefulRoutes<T>>,
-        state: State<T>,
+        state: T,
     ) -> Self {
         let mut self_clone = self.clone();
 
