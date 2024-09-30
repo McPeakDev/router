@@ -4,7 +4,7 @@ pub type AxumRouterWithState<T> = GenericRouter<T>;
 pub type StatefulRoutes<T> = Vec<StatefulRoute<T>>;
 pub type StatefulRoute<T> = (&'static str, axum::Router<T>);
 
-pub type StatefulMiddleware<E, S> = Option<Vec<FromExtractorLayer<E, S>>>;
+pub type StatefulMiddleware<E, S> = FromExtractorLayer<E, S>;
 pub trait StatefulNestedRouter<T> {
     fn get() -> StatefulRoute<T>;
 }
@@ -61,17 +61,11 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
         &self,
         middleware: StatefulMiddleware<E, S>,
     ) -> Self {
-        if middleware.is_some() {
-            let mut self_clone = self.clone();
-            let middleware_to_add = middleware.unwrap();
+        let mut self_clone = self.clone();
 
-            for mw in middleware_to_add {
-                self_clone.app = self_clone.app.route_layer(mw);
-            }
+        self_clone.app = self_clone.app.route_layer(middleware);
 
-            return self_clone;
-        }
-        return self.clone();
+        return self_clone;
     }
 
     pub async fn serve(self) {
