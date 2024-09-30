@@ -5,6 +5,13 @@ pub type StatefulRoutes<T> = Vec<StatefulRoute<T>>;
 pub type StatefulRoute<T> = (&'static str, axum::Router<T>);
 
 pub type StatefulMiddleware<E, S> = FromExtractorLayer<E, S>;
+
+pub trait Middleware<S> {
+    fn get_extractor(state: S) -> StatefulMiddleware<Self, S>
+    where
+        Self: Sized;
+}
+
 pub trait StatefulNestedRouter<T> {
     fn get() -> StatefulRoute<T>;
 }
