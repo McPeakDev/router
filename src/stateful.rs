@@ -1,4 +1,5 @@
-use axum::{extract::FromRequestParts, middleware::FromExtractorLayer, Router as GenericRouter};
+use axum::{extract::FromRequestParts, http::Method, middleware::FromExtractorLayer, Router as GenericRouter};
+use tower_http::cors::{Any, CorsLayer};
 
 pub type AxumRouterWithState<T> = GenericRouter<T>;
 pub type StatefulRoutes<T> = Vec<StatefulRoute<T>>;
@@ -59,6 +60,7 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
 
         self_clone.app = AxumRouterWithState::new()
             .nest("/api", self_clone.get_routes())
+            .layer(CorsLayer::permissive())
             .with_state(state);
 
         return self_clone;
