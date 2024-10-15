@@ -60,7 +60,6 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
 
         self_clone.app = AxumRouterWithState::new()
             .nest("/api", self_clone.get_routes())
-            .layer(CorsLayer::permissive())
             .with_state(state);
 
         return self_clone;
@@ -77,8 +76,10 @@ impl<T: Clone + Send + Sync + 'static> Router<T> {
         return self_clone;
     }
 
-    pub async fn serve(self) {
+    pub async fn serve(mut self) {
         //Create Listener to consume the API.
+
+        self.app = self.app.layer(CorsLayer::permissive());
         let listener = tokio::net::TcpListener::bind(&self.address).await.unwrap();
 
         let routes = self.routes.clone();
